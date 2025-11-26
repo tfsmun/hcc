@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TFS HCC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-dark:#0b0e12;
+      --bg-grad-1:#121725;
+      --bg-grad-2:#0e1320;
+      --accent:#ffcc00;
+      --accent-2:#ff416c;
+      --accent-3:#4b79ff;
+      --text:#e9edf5;
+      --muted:#aab3c8;
+      --card:#121826cc;
+      --glass:#1c2336cc;
+      --shadow:0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% 10%, #14203b 0%, transparent 60%),
+        radial-gradient(1000px 500px at 90% 0%, #1a2452 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+      overflow-x:hidden;
+    }
+
+    /* Top ribbon */
+    header{
+      position:fixed; top:0; left:0; right:0; z-index:1000;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 20px;
+      background:linear-gradient(180deg, rgba(7,10,16,0.8), rgba(7,10,16,0.35));
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      animation:slideDown 800ms ease-out both;
+    }
+    @keyframes slideDown { from{ transform:translateY(-100%);} to{ transform:translateY(0);} }
+    .ribbon-left, .ribbon-right{ display:flex; align-items:center; gap:12px; }
+    .logo-slot{
+      width:54px; height:54px; border-radius:10px; overflow:hidden;
+      border:1px solid rgba(255,255,255,0.15);
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: var(--shadow);
+      transition: transform .4s ease, box-shadow .4s ease;
+      cursor:pointer;
+    }
+    .logo-slot:hover{ transform:translateY(-2px) scale(1.05); box-shadow:0 25px 55px rgba(0,0,0,0.7); }
+    .logo-slot img{ width:100%; height:100%; object-fit:cover; }
+
+    /* Title hero */
+    .hero{
+      padding:140px 24px 60px;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    /* subtle grid background */
+    .hero::before{
+      content:"";
+      position:absolute; inset:-100px;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size:24px 24px;
+      transform:skewY(-6deg) scale(1.1);
+      opacity:.25;
+      pointer-events:none;
+    }
+    .title{
+      font-family:'Montserrat', sans-serif;
+      font-weight:800;
+      font-size: clamp(2.4rem, 4.8vw, 4rem);
+      letter-spacing: .02em;
+      margin:0 0 10px;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glow 2s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 12px rgba(255, 65, 108, .25));
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 12px rgba(255,65,108,.5), 0 0 24px rgba(75,121,255,.25); }
+      to   { text-shadow: 0 0 20px rgba(255,65,108,.7), 0 0 40px rgba(75,121,255,.35); }
+    }
+
+    .powered-wrap{
+      display:inline-flex; align-items:center; gap:10px; margin-top:8px;
+      color:var(--muted); font-size: 0.98rem;
+      background: rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.12);
+      padding:8px 12px; border-radius:999px;
+    }
+    .powered-wrap a{
+      color:var(--accent); text-decoration:none; font-weight:600;
+      transition: color .25s ease, text-shadow .25s ease;
+    }
+    .powered-wrap a:hover{ color:#fff; text-shadow:0 0 8px rgba(255,204,0,.45); }
+    .powered-logo{
+      width:24px; height:24px; border-radius:6px; overflow:hidden;
+      border:1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.06);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .powered-logo img{ width:100%; height:100%; object-fit:cover; }
+
+    /* Navigation chips */
+    nav.nav{
+      margin-top:26px;
+      display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      border:1px solid rgba(255,255,255,0.18);
+      color:#fff; font-weight:600; font-size:.95rem;
+      cursor:pointer; transition: transform .2s ease, box-shadow .2s ease, background .3s ease;
+      box-shadow: var(--shadow);
+    }
+    .chip:hover{ transform: translateY(-2px); box-shadow:0 16px 30px rgba(0,0,0,.55); background: rgba(255,255,255,0.12); }
+    .chip svg{ width:18px; height:18px; }
+
+    /* Sections */
+    main{ padding: 10px 20px 100px; max-width: 1100px; margin: 0 auto; }
+    section{
+      margin: 30px auto;
+      padding: 24px;
+      background: var(--glass);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      opacity:0; transform: translateY(40px) scale(.98);
+      transition: opacity .9s ease, transform .9s ease, box-shadow .4s ease;
+      position: relative; overflow: hidden;
+    }
+    section.visible{ opacity:1; transform: translateY(0) scale(1); }
+    section::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(600px 200px at 100% -10%, rgba(255,255,255,0.06), transparent 60%);
+      pointer-events:none;
+    }
+    section h2{
+      margin: 0 0 4px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700; letter-spacing:.02em;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--accent);
+    }
+    section .sub{
+      margin: 0 0 16px; color: var(--muted); font-size: .98rem;
+    }
+
+    /* Cards grid */
+    .grid{
+      display:grid; gap:22px;
+      grid-template-columns: repeat( auto-fit, minmax(260px, 1fr) );
+    }
+    .card{
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:16px; padding:16px;
+      transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+      position:relative; overflow:hidden;
+    }
+    .card:hover{
+      transform: translateY(-6px);
+      box-shadow:0 28px 60px rgba(0,0,0,.6);
+      border-color: rgba(255,204,0,0.45);
+    }
+    .card p{ color:var(--text); line-height:1.6; margin:10px 0 0; }
+
+    /* People cards with images */
+    .person{
+      display:flex; flex-direction:column; align-items:center; text-align:center;
+      gap:12px;
+    }
+    .avatar{
+      width: 200px; height: 200px; border-radius: 16px; overflow:hidden;
+      border:1px solid rgba(255,255,255,0.18);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+      transform: translateZ(0);
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .name{ font-weight:700; font-size:1.05rem; }
+    .role{ color:var(--muted); font-size:.95rem; }
+
+    /* Brochure button */
+    .btn{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:12px 16px; border-radius:12px; font-weight:700;
+      color:#0b0e12; background: linear-gradient(90deg, var(--accent), #ffd84d);
+      border:none; cursor:pointer; box-shadow:0 14px 28px rgba(255,204,0,.25);
+      transition: transform .2s ease, box-shadow .25s ease;
+    }
+    .btn:hover{ transform: translateY(-2px); box-shadow:0 20px 40px rgba(255,204,0,.35); }
+    .btn svg{ width:18px; height:18px; }
+
+    /* Footer spacing */
+    footer{ text-align:center; color:var(--muted); padding:40px 20px 60px; }
+
+    /* Parallax decor lines */
+    .lines{
+      position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.25;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 90px 100%;
+      transform: translateZ(0);
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 560px){
+      .avatar{ width:180px; height:180px; }
+      .logo-slot{ width:46px; height:46px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Decorative lines -->
+  <div class="lines" aria-hidden="true"></div>
+
+  <!-- Ribbon: MUN logo left, School logo right -->
+  <header>
+    <div class="ribbon-left">
+      <div class="logo-slot" title="MUN Logo">
+        <!-- Replace src with your MUN logo -->
+        <img src="https://tse1.mm.bing.net/th/id/OIP.U3D6E6L1i5m53QEYeXg-yAHaGY?rs=1&pid=ImgDetMain&o=7&rm=3" alt="MUN Logo">
+      </div>
+    </div>
+    <div class="ribbon-right">
+      <div class="logo-slot" title="School Logo">
+        <!-- Replace src with your School logo -->
+        <img src="https://image3.mouthshut.com/images/imagesp/925974580s.png" alt="School Logo" width="50px" height="50px">
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Title -->
+  <section class="hero" id="home">
+    <h1 class="title">HISTORICAL CRISIS COMMITTEE</h1>
+
+    <div class="powered-wrap" role="note">
+      <span>Powered by</span>
+      <a href="https://github.com/allianceparty/" target="_blank" rel="noopener">Alliance Party</a>
+      <div class="powered-logo" title="Alliance Party Logo">
+        <!-- Replace with Alliance Party logo -->
+        <img src="logo.png" alt="Alliance Party Logo">
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Section navigation">
+      <button class="chip" data-target="#agenda" title="Go to Agenda">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 4h14a1 1 0 0 1 1 1v14l-4-3-4 3-4-3-4 3V5a1 1 0 0 1 1-1z"/></svg>
+        Agenda
+      </button>
+      <button class="chip" data-target="#brochure" title="Go to Brochure">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h9a3 3 0 0 1 3 3v15l-6-3-6 3V5a3 3 0 0 1 3-3z"/></svg>
+        Brochure
+      </button>
+      <button class="chip" data-target="#chair" title="Go to Chair">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a5 5 0 0 1 5 5v2h-2V7a3 3 0 0 0-6 0v2H7V7a5 5 0 0 1 5-5zM5 11h14v2H5v-2zm2 4h10v2H7v-2zm2 4h6v2H9v-2z"/></svg>
+        Chair
+      </button>
+      <button class="chip" data-target="#cochair" title="Go to Co-Chair">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/></svg>
+        Chair
+      </button>
+      <button class="chip" data-target="#moderator" title="Go to Moderator">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z"/></svg>
+        Co-Chair
+      </button>
+    </nav>
+  </section>
+
+  <main>
+
+    <!-- Agenda -->
+    <section id="agenda" aria-labelledby="agenda-title">
+      <h2 id="agenda-title">Agenda</h2>
+      <p class="sub">Pivotal historical crises revisited through modern diplomatic lenses and rapid crisis updates.</p>
+
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin:0; color:#fff;">Session Flow</h3>
+          <p>
+            Opening statements, moderated caucus, crisis notes, unmoderated caucus, directives, and press briefings.
+          </p>
+        </div>
+        <div class="card">
+          <h3 style="margin:0; color:#fff;">Crisis Dynamics</h3>
+          <p>
+            Timed intel drops, evolving stakeholder interests, and branching outcomes drive high-stakes decision-making.
+          </p>
+        </div>
+        <div class="card">
+          <h3 style="margin:0; color:#fff;">Outcome</h3>
+          <p>
+            Delegates craft directives and communiqués to stabilize the scenario while advancing national objectives.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brochure -->
+    <section id="brochure" aria-labelledby="brochure-title">
+  <h2 id="brochure-title">Brochure</h2>
+  <p class="sub">
+    
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <p>
+        Download the official brochure and background guide for committee details, timelines, and role briefs.
+      </p>
+      <a href="HCC-GUIDE.pdf" class="btn" aria-label="Download brochure PDF" download>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M5 20h14v-2H5v2zm7-18l-5.5 5.5h4v6h3v-6h4L12 2z"/>
+        </svg>
+        Download PDF
+      </a>
+    </div>
+  </div>
+</section>
+
+    <!-- Chair -->
+    <section id="chair" aria-labelledby="chair-title">
+      <h2 id="chair-title">Chair</h2>
+      <p class="sub"></p>
+
+      <div class="grid">
+        <div class="card person">
+          <div class="avatar">
+            <!-- Replace with actual image -->
+            <img src="chair1.png" alt="Chair portrait">
+          </div>
+          <div class="name">Dhruv</div>
+          <div class="role">Chair</div>
+          <p>Dhruv (9B) has been MUNing since 7th grade. In his 1st MUN (JMUN 2024) he won the Outstanding Delegate award. Since then, he’s been to 3 other MUNs including GMUN (24 & 25) and JMUN (25). In GMUN 2025 he got a verbal mention.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chair -->
+    <section id="cochair" aria-labelledby="cochair-title">
+      <h2 id="cochair-title">Chair</h2>
+      <p class="sub"></p>
+
+      <div class="grid">
+        <div class="card person">
+          <div class="avatar">
+            <!-- Replace with actual image -->
+            <img src="chair2.jpg" alt="Co-Chair portrait">
+          </div>
+          <div class="name">Sarvad</div>
+          <div class="role">Chair</div>
+          <p>Sarrvad (9C) has been MUNing since 7th grade. Since then, he has gone for 7 MUN’s including GMUN(24 & 25) and TCIS MUN, GEAR MUN and TFS MUN in the past two years. He has also won Honourable Mention and Verbal Mention.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Co-chair -->
+    <section id="moderator" aria-labelledby="moderator-title">
+      <h2 id="moderator-title">Co-Chair</h2>
+      <p class="sub">Facilitates communication, handles notes, and bridges delegates with the dais.</p>
+
+      <div class="grid">
+        <div class="card person">
+          <div class="avatar">
+            <!-- Replace with actual image -->
+            <img src="cochair.jpg" alt="Moderator portrait">
+          </div>
+          <div class="name">Priyanshi</div>
+          <div class="role">Co-Chair</div>
+          <p>Priyanshi (8C) began her MUN journey with TFS MUN, an experience that really helped her grow as a speaker and a leader. She carries a proficient academic background and is quite well-known for her refined writing skills and prudent intellect.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    This Website Is Under Alliance Group LLC
+  </footer>
+
+  <script>
+    // Smooth section reveal on scroll
+    const sections = document.querySelectorAll("section");
+    const onScrollReveal = () => {
+      sections.forEach(sec => {
+        const r = sec.getBoundingClientRect();
+        if (r.top < window.innerHeight - 120) sec.classList.add("visible");
+      });
+    };
+    window.addEventListener("scroll", onScrollReveal);
+    window.addEventListener("load", onScrollReveal);
+
+    // Chip nav scroll
+    document.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const target = chip.getAttribute("data-target");
+        const el = document.querySelector(target);
+        if (!el) return;
+        window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().top - 90, behavior: "smooth" });
+      });
+    });
+
+    // Fake brochure download (replace href to actual file)
+    document.getElementById("downloadBrochure").addEventListener("click", () => {
+      const brochureUrl = "brochure.pdf"; // Replace with your brochure file path
+      const a = document.createElement("a");
+      a.href = brochureUrl;
+      a.download = "HCC-Brochure.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    // Subtle parallax lines
+    const lines = document.querySelector(".lines");
+    window.addEventListener("scroll", () => {
+      const y = window.scrollY * 0.1;
+      lines.style.transform = `translateY(${y}px)`;
+    });
+  </script>
+</body>
+</html>
